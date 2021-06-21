@@ -47,3 +47,5 @@ end
 # File.open("ml-categories.txt", "w") { |file| file << array }
 
 # File.open("ml-categories.txt", "w") { |file| file.write(categories.to_json) }
+
+# https://ruby-doc.org/core-3.0.1/doc/csv/recipes/generating_rdoc.html#label-Recipe-3A+Generate+to+File+with+Headers
