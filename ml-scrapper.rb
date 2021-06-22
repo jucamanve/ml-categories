@@ -6,9 +6,39 @@ require 'json'
 require 'csv'
 
 # Fetch and parse HTML document
-# doc = Nokogiri::HTML(URI.open('https://nokogiri.org/tutorials/installing_nokogiri.html'))
 doc = Nokogiri::HTML(URI.open('https://www.mercadolibre.com.ve/categorias'))
-path = 'categs.csv'
+file_path = 'categs.csv'
+
+# File.open("ml-categories.txt", "w") { |file| file.write(categories.to_json) }
+CSV.open(file_path, 'w') do |csv|
+  containers = doc.css(".categories__container").each do |container|
+    row = []
+    category = container.children.first.text
+    puts category
+    row << category
+    
+    subcategories = container.children.last.css("li a").each do |subcategory|
+      subcat = subcategory.children.first.text
+      puts "|-> #{subcat}"
+      row << subcat
+
+      subcat_doc = Nokogiri::HTML(URI.open(subcategory.attributes["href"].value))
+
+      # subcats_containers = subcat_doc.css('//*[@id="modal"]/div[2]/a').each do |subcats_container|
+      subcats_containers = subcat_doc.xpath('//*[@id="root-app"]/div/div/aside/section/dl[2]/dd').each do |subcats_container|
+        puts "|   |-> #{subcats_container.children.first.children.first.text}"
+      end
+    end
+    csv << row
+    10.times {
+      csv << []
+    }
+  end
+end
+
+
+# doc = Nokogiri::HTML(URI.open('https://nokogiri.org/tutorials/installing_nokogiri.html'))
+
 # Search for nodes by css
 # doc.css('nav ul.menu li a', 'article h2').each do |link|
 #   puts link.content
@@ -23,29 +53,8 @@ path = 'categs.csv'
 #   puts link.content
 # end
 
-
-CSV.open(path, 'w') do |csv|
-  containers = doc.css(".categories__container").each do |container|
-    row = []
-    category = container.children.first.text
-    puts category
-    row << category
-    
-    subcategories = container.children.last.css("li a h3").each do |subcategory|
-      subcat = subcategory.text
-      puts "|-> " + subcat
-      row << subcategory.text
-    end
-    csv << row
-    10.times {
-      csv << []
-    }
-  end
-end
-
 # categories = doc.css('h2 a').map(&:text)
 # File.open("ml-categories.txt", "w") { |file| file << array }
 
-# File.open("ml-categories.txt", "w") { |file| file.write(categories.to_json) }
 
 # https://ruby-doc.org/core-3.0.1/doc/csv/recipes/generating_rdoc.html#label-Recipe-3A+Generate+to+File+with+Headers
