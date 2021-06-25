@@ -9,30 +9,32 @@ require 'csv'
 doc = Nokogiri::HTML(URI.open('https://www.mercadolibre.com.ve/categorias'))
 file_path = 'categs.csv'
 
-# File.open("ml-categories.txt", "w") { |file| file.write(categories.to_json) }
-CSV.open(file_path, 'w') do |csv|
-  containers = doc.css(".categories__container").each do |container|
-    row = []
-    category = container.children.first.text
-    puts category
-    row << category
-    
-    subcategories = container.children.last.css("li a").each do |subcategory|
-      subcat = subcategory.children.first.text
-      puts "|-> #{subcat}"
-      row << subcat
+File.open("ml-categories.txt", "a") do |file|
+  CSV.open(file_path, 'w') do |csv|
+    containers = doc.css(".categories__container").each do |container|
+      row = []
+      category = container.children.first.text
+      puts category; file.puts(category)
+      row << category
+      
+      subcategories = container.children.last.css("li a").each do |subcategory|
+        subcat = subcategory.children.first.text
+        puts "|-> #{subcat}"; file.puts("|-> #{subcat}")
+        row << subcat
 
-      subcat_doc = Nokogiri::HTML(URI.open(subcategory.attributes["href"].value))
+        subcat_doc = Nokogiri::HTML(URI.open(subcategory.attributes["href"].value))
 
-      # subcats_containers = subcat_doc.css('//*[@id="modal"]/div[2]/a').each do |subcats_container|
-      subcats_containers = subcat_doc.xpath('//*[@id="root-app"]/div/div/aside/section/dl[2]/dd').each do |subcats_container|
-        puts "|   |-> #{subcats_container.children.first.children.first.text}"
+        # subcats_containers = subcat_doc.css('//*[@id="modal"]/div[2]/a').each do |subcats_container|
+                                              '//*[@id="root-app"]/div/div/aside/section/dl[1]/dd'
+        subcats_containers = subcat_doc.xpath('//*[@id="root-app"]/div/div/aside/section/dl[2]/dd').each do |subcats_container|
+          puts "|   |-> #{subcats_container.children.first.children.first.text}"; file.puts("|   |-> #{subcats_container.children.first.children.first.text}")
+        end
       end
+      # csv << row
+      # 10.times {
+      #   csv << []
+      # }
     end
-    csv << row
-    10.times {
-      csv << []
-    }
   end
 end
 
