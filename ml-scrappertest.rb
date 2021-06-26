@@ -22,7 +22,15 @@ cats_containers = doc.css(".categories__container").each do |cat_container|
     # Second subcategories level
     subcat_1_doc = Nokogiri::HTML(URI.open(subcat_1_container.attributes["href"].value))
     # Possible Cases
-    subcats_2_containers = subcat_1_doc.xpath('//*[@id="root-app"]/div/div/aside/section/dl[2]/dd/a').each do |subcat_2_container|
+    # Modal
+    subcats_2_containers = subcat_1_doc.xpath("//*[@*[aria-label='Categorías']]")
+    subcats_2_containers.each do |subcat_2_container|
+       puts "|   |-> #{subcat_2_container.children[0].text}"
+    end
+
+    # Left Menu
+    subcats_2_containers = subcat_1_doc.xpath('//*[@id="root-app"]/div/div/aside/section/dl[2]/dd/a')
+    subcats_2_containers.each do |subcat_2_container|
       #  puts "|   |-> #{subcat_2_container.xpath('//elements[@aria-label]').size}"
        puts "|   |-> #{subcat_2_container.children[0].text}"
     end
