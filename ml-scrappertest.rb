@@ -23,7 +23,7 @@ cats_containers = doc.css(".categories__container").each do |cat_container|
     subcat_1_doc = Nokogiri::HTML(URI.open(subcat_1_container.attributes["href"].value))
     # Possible Cases
     # Modal
-    subcats_2_containers = subcat_1_doc.xpath("//*[@*[aria-label='Categorías']]")
+    subcats_2_containers = subcat_1_doc.xpath('//*[@aria-label="Categorías"]')
     subcats_2_containers.each do |subcat_2_container|
        puts "|   |-> #{subcat_2_container.children[0].text}"
     end
